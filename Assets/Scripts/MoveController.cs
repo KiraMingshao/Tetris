@@ -66,7 +66,8 @@ public class MoveController : MonoBehaviour
         
         foreach(GameObject square in Child)
         {
-            if (!SquareManager.canMoveLeft)
+            SquareManager Square = square.GetComponent<SquareManager>();
+            if (!Square.canMoveLeft)
                 moveLeft = false;
             else
                 moveLeft = true;

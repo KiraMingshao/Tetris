@@ -5,7 +5,7 @@ using UnityEngine;
 public class SquareManager : MonoBehaviour
 {
 
-    public static bool canMoveLeft;
+    public bool canMoveLeft;
     public static bool canMoveRight;
 
     private void RangeLimitation()
