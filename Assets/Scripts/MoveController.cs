@@ -8,14 +8,13 @@ public class MoveController : MonoBehaviour
     public float lastFallTime;
 
     public GameObject tetris;
+
+    public GameObject gameManager;
     
     private float step;
 
-    private bool moveLeft;
-    private bool moveRight;
+    private bool canFall;
 
-    private int childCount;
-    List<GameObject> Child = new List<GameObject>();
     // Start is called before the first frame update
     void Start()
     {
@@ -25,20 +24,13 @@ public class MoveController : MonoBehaviour
         step = 0.48f;
 
         tetris = this.transform.gameObject;
-
-        moveLeft = true;
-        moveRight = true;
-
-        foreach (Transform child in tetris.transform)
-        {
-            Child.Add(child.gameObject);
-        }
+        
+        canFall = true;
     }
 
     // Update is called once per frame
     private void Update()
-    {
-        canMove();
+    {   
         Move();
         
         lastFallTime += Time.deltaTime;
@@ -51,34 +43,35 @@ public class MoveController : MonoBehaviour
 
     public void Move()
     {
-        if(Input.GetKeyDown(KeyCode.A) && moveLeft == true) 
+        Vector2 currentPos = transform.position;
+
+        if(Input.GetKeyDown(KeyCode.A)) 
             tetris.transform.position = Vector2.MoveTowards(tetris.transform.position, new Vector2(tetris.transform.position.x - 1, tetris.transform.position.y), step);
-        if (Input.GetKeyDown(KeyCode.D) && moveRight == true)
+        if (Input.GetKeyDown(KeyCode.D))
             tetris.transform.position = Vector2.MoveTowards(tetris.transform.position, new Vector2(tetris.transform.position.x + 1, tetris.transform.position.y), step);
+
+        if(gameManager.GetComponent<GameManager>().IsValidPosition(transform) == false)
+        {
+            transform.position = currentPos;
+        }
     }
     public void Fall()
     {
+        if (canFall == false)
+            return;
+
         tetris.transform.position = Vector2.MoveTowards(tetris.transform.position, new Vector2(tetris.transform.position.x, tetris.transform.position.y - 1), step);
+    
+        if(gameManager.GetComponent<GameManager>().IsValidPosition(transform) == false)
+        {
+            FallToBottom();
+        }
+
     }
 
-    private void canMove()
+   public void FallToBottom()
     {
-        
-        foreach(GameObject square in Child)
-        {
-            SquareManager Square = square.GetComponent<SquareManager>();
-            if (!Square.canMoveLeft)
-                moveLeft = false;
-            else
-                moveLeft = true;
-        }
-        foreach (GameObject square in Child)
-        {
-            if (!SquareManager.canMoveRight)
-                moveRight = false;
-            else 
-                moveRight = true;
-        }
+        canFall = false;
     }
     
 }
